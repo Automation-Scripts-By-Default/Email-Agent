@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da2611226deac2ee2796e361216ec001",
+    "content-hash": "47767a08c4633dd9acc888b7f2215421",
     "packages": [
         {
             "name": "brick/math",
@@ -2015,6 +2015,54 @@
                 }
             ],
             "time": "2025-11-18T12:17:23+00:00"
+        },
+        {
+            "name": "lucasdasilvajunior/laravel-dockerfile",
+            "version": "v1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LucasDaSilva96/laravel-dockerfile.git",
+                "reference": "267d37c26a2cff1fac3d5cfe304888fb49236221"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LucasDaSilva96/laravel-dockerfile/zipball/267d37c26a2cff1fac3d5cfe304888fb49236221",
+                "reference": "267d37c26a2cff1fac3d5cfe304888fb49236221",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^8.0 | ^9.0 | ^10.0 | ^11.0 | ^12.0",
+                "php": ">=8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Lucasdasilvajunior\\LaravelDockerfile\\DockerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lucasdasilvajunior\\LaravelDockerfile\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Lucas Da Silva Junior",
+                    "email": "lucas.ds.developer@gmail.com"
+                }
+            ],
+            "description": "Laravel package to scaffold a Dockerfile with Supervisor and schedule:work",
+            "support": {
+                "issues": "https://github.com/LucasDaSilva96/laravel-dockerfile/issues",
+                "source": "https://github.com/LucasDaSilva96/laravel-dockerfile/tree/v1.0.3"
+            },
+            "time": "2025-11-29T12:50:52+00:00"
         },
         {
             "name": "monolog/monolog",
