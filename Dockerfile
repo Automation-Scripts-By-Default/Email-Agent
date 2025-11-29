@@ -12,8 +12,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libonig-dev \
     libxml2-dev \
-    cron \
-    && docker-php-ext-install pdo pdo_mysql zip mbstring tokenizer xml \
+    && docker-php-ext-install pdo pdo_mysql zip mbstring xml \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
@@ -40,7 +39,7 @@ RUN mkdir -p storage/framework/cache \
 COPY supervisor.conf /etc/supervisor/conf.d/laravel.conf
 
 # Expose PHP-FPM port
-# EXPOSE 9000
+EXPOSE 9000
 
 # Start Supervisor (which will start schedule:work, etc.)
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

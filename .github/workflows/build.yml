@@ -7,33 +7,57 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
-  build:
+  build-and-test:
     runs-on: self-hosted
+
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '25.x'
           cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Run build
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
         run: npm run build
 
-  test-docker:
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@v5
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: '25.x'
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Run tests in Docker
+          php-version: '8.3'
+          extensions: mbstring, xml, pdo, pdo_mysql, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHP tests
+        run: vendor/bin/pest
+
+      - name: Build and test Docker image
         run: |
-          docker build -t my-app-test .
-          docker run my-app-test npm test
+          docker build --cache-from my-app-test:latest -t my-app-test:${{ github.sha }} -t my-app-test:latest .
+          docker run --rm my-app-test:${{ github.sha }} php artisan --version
+
+      - name: Clean up old Docker images
+        if: always()
+        run: docker image prune -f

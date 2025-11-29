@@ -2018,16 +2018,16 @@
         },
         {
             "name": "lucasdasilvajunior/laravel-dockerfile",
-            "version": "v1.0.3",
+            "version": "v1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LucasDaSilva96/laravel-dockerfile.git",
-                "reference": "267d37c26a2cff1fac3d5cfe304888fb49236221"
+                "reference": "0072e66de7ba797c81337d6431fcf5d11a56f07e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LucasDaSilva96/laravel-dockerfile/zipball/267d37c26a2cff1fac3d5cfe304888fb49236221",
-                "reference": "267d37c26a2cff1fac3d5cfe304888fb49236221",
+                "url": "https://api.github.com/repos/LucasDaSilva96/laravel-dockerfile/zipball/0072e66de7ba797c81337d6431fcf5d11a56f07e",
+                "reference": "0072e66de7ba797c81337d6431fcf5d11a56f07e",
                 "shasum": ""
             },
             "require": {
@@ -2060,9 +2060,9 @@
             "description": "Laravel package to scaffold a Dockerfile with Supervisor and schedule:work",
             "support": {
                 "issues": "https://github.com/LucasDaSilva96/laravel-dockerfile/issues",
-                "source": "https://github.com/LucasDaSilva96/laravel-dockerfile/tree/v1.0.3"
+                "source": "https://github.com/LucasDaSilva96/laravel-dockerfile/tree/v1.0.4"
             },
-            "time": "2025-11-29T12:50:52+00:00"
+            "time": "2025-11-29T13:04:33+00:00"
         },
         {
             "name": "monolog/monolog",
