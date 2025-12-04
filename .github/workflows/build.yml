@@ -28,10 +28,16 @@ jobs:
       - name: Build assets
         run: npm run build
 
+      - name: Debug workspace path
+        run: |
+          echo "Workspace: ${GITHUB_WORKSPACE}"
+          ls -la ${GITHUB_WORKSPACE}
+          test -f ${GITHUB_WORKSPACE}/composer.json && echo "composer.json found" || echo "composer.json NOT found"
+
       - name: Install PHP dependencies in Docker
         run: |
           docker run --rm \
-            -v $GITHUB_WORKSPACE:/app \
+            -v ${GITHUB_WORKSPACE}:/app \
             -u $(id -u):$(id -g) \
             -w /app \
             composer:2 \
@@ -40,7 +46,7 @@ jobs:
       - name: Run PHP tests in Docker
         run: |
           docker run --rm \
-            -v $GITHUB_WORKSPACE:/app \
+            -v ${GITHUB_WORKSPACE}:/app \
             -u $(id -u):$(id -g) \
             -w /app \
             php:8.3-cli \
