@@ -1,0 +1,80 @@
+name: Deploy Application to Production
+
+on:
+  workflow_run:
+    workflows: ['CI Build and Test']
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Deploy to Production Server
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+        run: |
+          # Setup SSH key
+          echo "$DEPLOY_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+          # Copy necessary files to server
+          scp -i deploy_key.pem -o StrictHostKeyChecking=no \
+            docker-compose.prod.yml nginx.conf Dockerfile supervisor.conf \
+            $SERVER_USER@$SERVER_HOST:${APP_DIR:-/opt/email-agent}/
+
+          # Execute deployment on server
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST << 'EOF'
+            cd ${APP_DIR:-/opt/email-agent}
+
+            # Pull latest code
+            git fetch origin
+            git reset --hard origin/main
+
+            # Deploy with docker-compose
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d --build
+
+            # Run migrations
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
+
+            # Optimize Laravel
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan config:cache
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan route:cache
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan view:cache
+
+            # Cleanup
+            docker image prune -f
+          EOF
+
+          # Cleanup SSH key
+          rm deploy_key.pem
+
+      - name: Verify Deployment
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          APP_DIR: ${{ secrets.APP_DIR }}
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST << 'EOF'
+            cd ${APP_DIR:-/opt/email-agent}
+            echo "=== Container Status ==="
+            docker-compose -f docker-compose.prod.yml ps
+            echo "=== Application Version ==="
+            docker-compose -f docker-compose.prod.yml exec -T app php artisan --version
+          EOF
+
+          rm deploy_key.pem

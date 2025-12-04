@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: email-agent:${TAG:-latest}
+    container_name: email-agent-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL}
+      - DB_CONNECTION=${DB_CONNECTION:-mysql}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MAIL_MAILER=${MAIL_MAILER}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - email-agent-network
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    container_name: email-agent-nginx
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8080}:80'
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - email-agent-network
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: email-agent-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - email-agent-network
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  email-agent-network:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
