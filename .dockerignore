@@ -1,0 +1,44 @@
+# Ignore dependencies
+node_modules/
+vendor/
+
+# Laravel storage (except for app/public if needed)
+storage/
+!storage/app/
+!storage/app/public/
+
+# Logs
+*.log
+storage/*.log
+storage/logs/
+
+# Environment & keys
+.env
+.env.*
+!.env.example
+
+# Git & IDE
+.git/
+.gitignore
+.gitattributes
+.idea/
+.vscode/
+*.swp
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+
+# Docker / CI
+docker-compose.yml
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Build artifacts
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Composer cache
+composer.phar
