@@ -1,5 +1,5 @@
 # Base image
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -23,6 +23,9 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy application files
 COPY . /var/www/html
+
+# Fix git ownership warning
+RUN git config --global --add safe.directory /var/www/html || true
 
 # Install dependencies (optimize for production)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
