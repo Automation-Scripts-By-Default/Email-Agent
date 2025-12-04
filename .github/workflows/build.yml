@@ -32,6 +32,7 @@ jobs:
         run: |
           docker run --rm \
             -v $GITHUB_WORKSPACE:/app \
+            -u $(id -u):$(id -g) \
             -w /app \
             composer:2 \
             composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs
@@ -40,6 +41,7 @@ jobs:
         run: |
           docker run --rm \
             -v $GITHUB_WORKSPACE:/app \
+            -u $(id -u):$(id -g) \
             -w /app \
             php:8.3-cli \
             php vendor/bin/pest
