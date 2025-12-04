@@ -28,32 +28,26 @@ jobs:
       - name: Build assets
         run: npm run build
 
-      - name: Verify PHP and Composer
+      - name: Install PHP dependencies in Docker
         run: |
-          php --version
-          composer --version
+          docker run --rm \
+            -v $PWD:/app \
+            -w /app \
+            composer:2 \
+            composer install --prefer-dist --no-progress --no-interaction --ignore-platform-reqs
 
-      - name: Get Composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install PHP dependencies
-        run: composer install --prefer-dist --no-progress --no-interaction
-
-      - name: Run PHP tests
-        run: vendor/bin/pest
+      - name: Run PHP tests in Docker
+        run: |
+          docker run --rm \
+            -v $PWD:/app \
+            -w /app \
+            php:8.3-cli \
+            php vendor/bin/pest
 
       - name: Build and test Docker image
         run: |
-          docker build --cache-from my-app-test:latest -t my-app-test:${{ github.sha }} -t my-app-test:latest .
-          docker run --rm my-app-test:${{ github.sha }} php artisan --version
+          docker build --cache-from email-agent:latest -t email-agent:${{ github.sha }} -t email-agent:latest .
+          docker run --rm email-agent:${{ github.sha }} php artisan --version
 
       - name: Clean up old Docker images
         if: always()
