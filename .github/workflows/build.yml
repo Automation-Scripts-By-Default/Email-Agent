@@ -37,7 +37,7 @@ jobs:
       - name: Install PHP dependencies in Docker
         run: |
           docker run --rm \
-            -v "$(pwd)":/app \
+            -v "${GITHUB_WORKSPACE}":/app \
             -u $(id -u):$(id -g) \
             -w /app \
             composer:2 \
@@ -46,7 +46,7 @@ jobs:
       - name: Run PHP tests in Docker
         run: |
           docker run --rm \
-            -v "$(pwd)":/app \
+            -v "${GITHUB_WORKSPACE}":/app \
             -u $(id -u):$(id -g) \
             -w /app \
             php:8.3-cli \
