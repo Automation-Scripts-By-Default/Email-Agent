@@ -12,11 +12,6 @@ storage/
 storage/*.log
 storage/logs/
 
-# Environment & keys
-.env
-.env.*
-!.env.example
-
 # Git & IDE
 .git/
 .gitignore

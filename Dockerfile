@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     libxml2-dev \
+    libsqlite3-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         gd \
@@ -22,6 +23,7 @@ RUN apt-get update && apt-get install -y \
         intl \
         pdo \
         pdo_mysql \
+        pdo_sqlite \
         zip \
         mbstring \
         dom \
